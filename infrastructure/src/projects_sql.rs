@@ -6,7 +6,7 @@ use crate::entity::projects as Projects;
 pub struct ProjectsSql {}
 
 impl ProjectsSql {
-    pub async fn get_project_by_owner_id(
+    pub async fn get_project_list_by_owner_id(
         owner_id: i32,
     ) -> Result<Vec<Projects::Model>, sea_orm::DbErr> {
         let db_conn = db_connect().await;
@@ -42,7 +42,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_add_project_get_project() {
+    async fn test_projects_sql() {
         let owner_id = 1;
         let new_project = Projects::ActiveModel {
             id: ActiveValue::default(),
@@ -62,5 +62,9 @@ mod tests {
         assert!(project.is_some());
         let project = project.unwrap();
         assert_eq!(project.owner_id, owner_id);
+
+        let project_list = ProjectsSql::get_project_list_by_owner_id(owner_id).await.unwrap();
+        assert!(project_list.len() > 0);
     }
+
 }

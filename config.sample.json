@@ -1,0 +1,15 @@
+{
+    "app_config": {
+        "port": 8081
+    },
+    "pg_config": {
+        "db_host": "localhost",
+        "db_port": 5432,
+        "db_name": "db_name",
+        "db_user": "db_user",
+        "db_password": "db_pass"
+    },
+    "tg_config": {
+        "bot_token": "YOUR_BOT_TOKEN"
+    }
+}
