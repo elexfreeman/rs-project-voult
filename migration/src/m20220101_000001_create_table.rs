@@ -7,10 +7,13 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let table = table_auto(Users::Table)
-            .col(pk_auto(Users::Id))
-            .col(string_uniq(Users::Email))
-            .col(string(Users::Password))
-            .col(string(Users::Name))
+            .col(integer(Users::Id))
+            .col(pk_auto(Users::UserId))
+            .col(string(Users::FirstName))
+            .col(string(Users::LastName))
+            .col(string(Users::Username))
+            .col(string(Users::LanguageCode))
+            .index(Index::create().unique().name("idx-id-id").col(Users::Id))
             .to_owned();
         manager.create_table(table).await?;
         Ok(())
@@ -27,7 +30,9 @@ impl MigrationTrait for Migration {
 pub enum Users {
     Table,
     Id,
-    Email,
-    Name,
-    Password,
+    UserId,
+    FirstName,
+    LastName,
+    Username,
+    LanguageCode
 }

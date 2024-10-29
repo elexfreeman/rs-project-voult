@@ -7,20 +7,14 @@ use sea_orm::entity::prelude::*;
 pub struct Model {
     pub created_at: DateTime,
     pub updated_at: DateTime,
-    #[sea_orm(primary_key)]
+    #[sea_orm(unique)]
     pub id: i32,
-    pub pid: Uuid,
-    #[sea_orm(unique)]
-    pub email: String,
-    pub password: String,
-    #[sea_orm(unique)]
-    pub api_key: String,
-    pub name: String,
-    pub reset_token: Option<String>,
-    pub reset_sent_at: Option<DateTime>,
-    pub email_verification_token: Option<String>,
-    pub email_verification_sent_at: Option<DateTime>,
-    pub email_verified_at: Option<DateTime>,
+    #[sea_orm(primary_key)]
+    pub user_id: i32,
+    pub first_name: String,
+    pub last_name: String,
+    pub username: String,
+    pub language_code: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

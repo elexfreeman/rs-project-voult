@@ -1,4 +1,7 @@
-use actix_web::{web, App, HttpServer};
+use actix_cors::Cors;
+use actix_web::{http::header, web, App, HttpServer};
+use helpers;
+
 use system;
 use system::config_sys;
 
@@ -21,7 +24,7 @@ async fn main() -> std::io::Result<()> {
     });
 
     log::info!(
-        "starting HTTP server at http://[::1]:{}",
+        "starting HTTP server at http://0.0.0.0:{}",
         app_port.to_string()
     );
 
@@ -37,14 +40,22 @@ async fn main() -> std::io::Result<()> {
     println!("dobconnect {}", db_url);
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("no-cors")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+            .allowed_header(header::CONTENT_TYPE)
+            .supports_credentials()
+            .max_age(3600);
         App::new()
+            .wrap(cors)
             .app_data(user_data.clone())
             .service(sample_ctrl::sample_route_one)
             .service(sample_ctrl::sample_route_two)
             .service(sample_ctrl::sample_init_user_data)
     })
     .workers(4)
-    .bind(format!("[::1]:{}", app_port))?
+    .bind(format!("0.0.0.0:{}", app_port))?
     .run()
     .await
 }
