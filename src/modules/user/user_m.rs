@@ -13,10 +13,12 @@ impl UserM {
         request: web::Json<UserRouteR::Add::Request>,
     ) -> Result<UserRouteR::Add::Response, Error> {
         let mut out = UserRouteR::Add::Response { user_id: 0 };
+        println!("request: {:?}", request);
 
         let user = UsersSql::get_by_telegram_id(request.id.clone())
             .await
             .expect("db read error");
+        println!("user: {:?}", user);
 
         if user.len() > 0 {
             out.user_id = user[0].user_id;

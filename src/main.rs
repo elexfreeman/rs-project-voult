@@ -7,15 +7,17 @@ use system::config_sys;
 
 mod modules;
 use modules::sample::sample_ctrl;
+use modules::user::user_ctrl;
 
 mod interfaces;
 
 use crate::system::ctx_data_sys::CtxDataSys;
+use system::pg_connect_sys::db_connect;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let config = crate::system::config_sys::ConfigSys::get_instance();
+    let config = crate::system::config_sys::get_config().await;
     crate::system::config_sys::print_config(&config);
     let app_port = config.app_config.port;
 
@@ -38,6 +40,7 @@ async fn main() -> std::io::Result<()> {
         config.pg_config.db_name
     );
     println!("dobconnect {}", db_url);
+    let db_conn = db_connect().await;
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -53,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(sample_ctrl::sample_route_one)
             .service(sample_ctrl::sample_route_two)
             .service(sample_ctrl::sample_init_user_data)
+            .service(user_ctrl::user_init_route)
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?

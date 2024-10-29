@@ -10,7 +10,6 @@ impl ProjectsSql {
         owner_id: i32,
     ) -> Result<Vec<Projects::Model>, sea_orm::DbErr> {
         let db_conn = db_connect().await;
-        Projects::Entity::find_by_id(1).one(&db_conn.db).await?;
         let projects = Projects::Entity::find()
             .filter(Projects::Column::OwnerId.eq(owner_id))
             .all(&db_conn.db)

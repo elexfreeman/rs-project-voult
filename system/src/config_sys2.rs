@@ -1,4 +1,5 @@
-use tokio::sync::OnceCell;
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
 
 use std::env;
 use std::fs::File;
@@ -21,22 +22,23 @@ pub struct PgConfig {
     pub db_password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize ,Clone)]
 pub struct ConfigSys {
     pub pg_config: PgConfig,
     pub app_config: AppConfig,
 }
 
-static ONCE: OnceCell<ConfigSys> = OnceCell::const_new();
-
-pub async fn get_config() -> &'static ConfigSys {
-    ONCE.get_or_init(|| async {
-        let config = crate::config_sys::load_config();
-        config.unwrap()
-    })
-    .await
-}
-
+// Реализация статической переменной с ленивой инициализацией
+static INSTANCE: Lazy<Mutex<ConfigSys>> = Lazy::new(|| {
+    let config = crate::config_sys::load_config();
+    match config {
+        Ok(config) => Mutex::new(config),
+        Err(e) => {
+            println!("Error loading config: {:?}", e);
+            panic!("Error loading config");
+        }   
+    }
+});
 
 impl ConfigSys {
     pub fn get_pg_uri(&self) -> String {
@@ -46,10 +48,15 @@ impl ConfigSys {
         )
     }
 
+    // Метод для доступа к экземпляру синглтона
+    pub fn get_instance() -> std::sync::MutexGuard<'static, ConfigSys> {
+        INSTANCE.lock().unwrap()
+    }
+
     // Пример метода для изменения состояния синглтона
-    //    pub fn set_value(&mut self, value: i32) {
-    //        self.value = value;
-    //    }
+//    pub fn set_value(&mut self, value: i32) {
+//        self.value = value;
+//    }
 }
 
 pub fn get_config_file_name(args: &[String]) -> Option<String> {
