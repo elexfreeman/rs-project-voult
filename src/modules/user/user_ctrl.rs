@@ -21,6 +21,8 @@ impl<'a> UserCtrl<'a> {
         request: web::Json<R::Add::Request>,
     ) -> Result<HttpResponse, Error> {
         log::info!("Request from /user/init");
+        let user_header = self.ctx_sys.get_header("Content-Type");
+        println!("Headers {:?}",Some(user_header));
 
         fa_action!(
             UserM::add_user(request),
