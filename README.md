@@ -15,6 +15,11 @@ cargo test -p infrastructure -- projects_sql --  --config ../config.json
 cargo test -p helpers -- telegram_user_data --nocapture --  --config ../config.json
 ```
 
+Компилиция релиза с помощью docker-compose
+```bash
+docker-compose up
+```
+
 Добавить библитеку
 ```bash
 cargo new --lib some-lib-name
