@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  rust-builder:
+    image: rust:latest
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+      - ./release:/usr/src/app/target/release
+    command: ["cargo", "build", "--release"]
