@@ -3,6 +3,7 @@ use chrono::prelude::Utc;
 use infrastructure::entity::users as Users;
 use infrastructure::users_sql::UsersSql;
 use sea_orm::ActiveValue;
+use system::error::AppError;
 
 use crate::modules::user::user_r::UserRouteR;
 
@@ -11,7 +12,7 @@ pub struct UserM {}
 impl UserM {
     pub async fn add_user(
         request: web::Json<UserRouteR::Add::Request>,
-    ) -> Result<UserRouteR::Add::Response, Error> {
+    ) -> Result<UserRouteR::Add::Response, AppError> {
         let mut out = UserRouteR::Add::Response { user_id: 0 };
         println!("request: {:?}", request);
 

@@ -5,4 +5,5 @@ pub mod config_sys;
 pub mod ctx_sys;
 pub mod access_sys;
 pub mod pg_connect_sys;
+pub mod error;
 

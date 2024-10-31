@@ -7,7 +7,7 @@ use system::config_sys;
 
 mod modules;
 use modules::sample::sample_ctrl;
-use modules::user::user_ctrl;
+use modules::user::{self, user_ctrl};
 
 mod interfaces;
 
@@ -16,7 +16,7 @@ use system::pg_connect_sys::db_connect;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
     let config = crate::system::config_sys::get_config().await;
     crate::system::config_sys::print_config(&config);
     let app_port = config.app_config.port;
@@ -44,10 +44,10 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("no-cors")
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
-            .allowed_header(header::CONTENT_TYPE)
+            .allow_any_origin()
+            .allow_any_header()
+            .allow_any_method()
+            .expose_any_header()
             .supports_credentials()
             .max_age(3600);
         App::new()
@@ -57,6 +57,7 @@ async fn main() -> std::io::Result<()> {
             .service(sample_ctrl::sample_route_two)
             .service(sample_ctrl::sample_init_user_data)
             .service(user_ctrl::user_init_route)
+            .route("/api/test", web::post().to(user_ctrl::user_test))
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?
