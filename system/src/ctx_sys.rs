@@ -1,4 +1,3 @@
-use actix_web::App;
 use actix_web::{web::Data, HttpRequest};
 use helpers::telegram_user_data::{decode_tg_user_data, TgUserData};
 use std::sync::Mutex;

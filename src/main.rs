@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{http::header, web, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use helpers;
 
 use system;
@@ -7,7 +7,7 @@ use system::config_sys;
 
 mod modules;
 use modules::sample::sample_ctrl;
-use modules::user::{self, user_ctrl};
+use modules::user::user_ctrl;
 
 mod interfaces;
 
@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
         config.pg_config.db_name
     );
     println!("dobconnect {}", db_url);
-    let db_conn = db_connect().await;
+    db_connect().await;
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -57,7 +57,6 @@ async fn main() -> std::io::Result<()> {
             .service(sample_ctrl::sample_route_two)
             .service(sample_ctrl::sample_init_user_data)
             .service(user_ctrl::user_init_route)
-            .route("/api/test", web::post().to(user_ctrl::user_test))
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?

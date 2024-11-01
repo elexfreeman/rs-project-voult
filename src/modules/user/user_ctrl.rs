@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{post, web, HttpRequest, HttpResponse};
 
 use crate::system::ctx_sys::CtxSys;
 
@@ -23,37 +23,24 @@ impl<'a> UserCtrl<'a> {
         }
     }
 
-    async fn init(&self, request: web::Json<R::Add::Request>) -> Result<R::Add::Response, AppError> {
-        log::info!("Request from /user/init");
-        let auth = self.check_user_data();
-        match auth {
-            Ok(_) => UserM::add_user(request).await,
-            Err(e) => Err(e),
-        }
+    async fn init(
+        &self,
+        request: web::Json<R::Add::Request>,
+    ) -> Result<R::Add::Response, AppError> {
+        self.check_user_data()?;
+        UserM::add_user(request).await
     }
 }
 
 #[post("/user/init")]
 pub async fn user_init_route(
-    body: web::Json<R::Add::Request>,
+    body: Result<web::Json<R::Add::Request>, actix_web::Error>,
     req: HttpRequest,
 ) -> Result<HttpResponse, AppError> {
+    log::info!("Request from /user/init");
+    let body = body.map_err(|e| AppError::json_error(e))?;
     let ctx = CtxSys::new(req);
     let ctrl = UserCtrl::new(&ctx);
-    let response: Result<R::Add::Response, AppError> = ctrl.init(body).await;
-    response
-        .map(|data| HttpResponse::Ok().json(data))
-        .map_err(|e| e)
-}
-
-pub async fn user_test(
-    body: web::Json<R::Add::Request>,
-    req: HttpRequest,
-) -> Result<impl Responder, AppError> {
-    let ctx = CtxSys::new(req);
-    let ctrl = UserCtrl::new(&ctx);
-    let response: Result<R::Add::Response, AppError> = ctrl.init(body).await;
-    response
-        .map(|data| HttpResponse::Ok().json(data))
-        .map_err(|e| e)
+    let response = ctrl.init(body).await?;
+    Ok(HttpResponse::Ok().json(response))
 }

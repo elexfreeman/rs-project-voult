@@ -1,20 +1,6 @@
-// https://www.lpalmieri.com/posts/error-handling-rust/
-
-// IT's advisable to have your code panic when its possible that your code could end up in a bad state. The bad state is not something that's expected to happen occasionally
-
-// Your code after this point needs to rely on not being in this bad state.
-
-// In example, it's understood that a call to a method like unwrap that could panic is meant as a placeholder for the way you'd want your application to handle errors, which can differ based on what the rest of your code is doing.
-
-// Similarly, the unwrap and expect methods are very handy when prototyping berfore you're ready to decide how to handle errors.
-
-// When failure is expected, it's more appropriate to return a Result than to make a panic!.
-
-// WE dont have null values we have option have take Some(T), We use unwrap_or(default)
-
 use core::fmt;
 
-use actix_web::{error::ResponseError, http::StatusCode, HttpResponse};
+use actix_web::{error::ResponseError, error, http::StatusCode, HttpResponse};
 use serde::Serialize;
 use validator::ValidationErrors;
 
@@ -39,6 +25,14 @@ pub struct AppErrorResponse {
     pub error: String,
 }
 impl AppError {
+    pub fn json_error(e: error::Error) -> Self {
+        AppError {
+            cause: Some(String::from("JSON error")),
+            message: Some(e.to_string()),
+            error_type: AppErrorType::ValidationError,
+        }
+    }
+
     // we are handling the none. function name should match field name
     fn message(&self) -> String {
         match &*self {
@@ -73,9 +67,11 @@ impl AppError {
 }
 impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        println!(">>> +++ HERE 1 fmt::Display");
         write!(f, "{:?}", self)
     }
 }
+
 impl ResponseError for AppError {
     //error_response and status_code are the provided methods for ResponseError Trait
 
@@ -107,6 +103,7 @@ impl From<ValidationErrors> for AppError {
 
 impl fmt::Display for AppErrorType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        println!(">>> +++ HERE fmt::Display");
         write!(f, "{:?}", self)
     }
 }

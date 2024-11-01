@@ -45,11 +45,6 @@ impl ConfigSys {
             self.pg_config.db_host, self.pg_config.db_port
         )
     }
-
-    // Пример метода для изменения состояния синглтона
-    //    pub fn set_value(&mut self, value: i32) {
-    //        self.value = value;
-    //    }
 }
 
 pub fn get_config_file_name(args: &[String]) -> Option<String> {
@@ -72,7 +67,6 @@ pub fn load_config() -> Result<ConfigSys, std::io::Error> {
         config_file_name = config_file_from_args.unwrap();
     }
     let file_path = config_file_path + &config_file_name;
-    println!("Use config: {:?}", file_path);
 
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);

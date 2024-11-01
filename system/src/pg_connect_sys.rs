@@ -9,7 +9,6 @@ pub struct DbConnectSys {
 
 impl DbConnectSys {
     async fn new() -> Self {
-        println!("db_connect new");
         let config = crate::config_sys::get_config().await;
         crate::config_sys::print_config(&config);
         let db_url = format!(
@@ -20,7 +19,6 @@ impl DbConnectSys {
             config.pg_config.db_port,
             config.pg_config.db_name
         );
-        println!("{}",&db_url);
         let mut opt = ConnectOptions::new(db_url);
         opt.max_connections(100)
             .min_connections(5)
@@ -40,9 +38,7 @@ static ONCE: OnceCell<DbConnectSys> = OnceCell::const_new();
 
 pub async fn db_connect() -> &'static DbConnectSys {
     ONCE.get_or_init(|| async { 
-        println!(">>> db_connect get_or_init");
         let db = DbConnectSys::new().await;
-        println!(">>> 2 db_connect get_or_init");
         db
     })
         .await
