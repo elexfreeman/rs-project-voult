@@ -14,7 +14,7 @@ pub enum AppErrorType {
 
 // Struct type is already defined Option<String> and AppErrorType. We can also define later.
 #[derive(Debug)]
-pub struct AppError {
+pub struct ErrorSys {
     pub cause: Option<String>,
     pub message: Option<String>,
     pub error_type: AppErrorType,
@@ -24,9 +24,17 @@ pub struct AppError {
 pub struct AppErrorResponse {
     pub error: String,
 }
-impl AppError {
+impl ErrorSys {
+    pub fn db_error(e: String) -> Self {
+        ErrorSys {
+            cause: Some(String::from("DB error")),
+            message: Some(e),
+            error_type: AppErrorType::DbError,
+        }
+    }
+
     pub fn auth_error(e: String) -> Self {
-        AppError {
+        ErrorSys {
             cause: Some(String::from("Auth error")),
             message: Some(e),
             error_type: AppErrorType::AccessError,
@@ -34,7 +42,7 @@ impl AppError {
     }
 
     pub fn json_error(e: error::Error) -> Self {
-        AppError {
+        ErrorSys {
             cause: Some(String::from("JSON error")),
             message: Some(e.to_string()),
             error_type: AppErrorType::ValidationError,
@@ -45,17 +53,17 @@ impl AppError {
     fn message(&self) -> String {
         match &*self {
             // Error message is found then clone otherwise default message
-            AppError {
+            ErrorSys {
                 cause: _,
                 message: Some(message),
                 error_type: _,
             } => message.clone(),
-            AppError {
+            ErrorSys {
                 cause: _,
                 message: None,
                 error_type: AppErrorType::NotFoundError,
             } => "The requested item was not found".to_string(),
-            AppError {
+            ErrorSys {
                 cause: Some(cause),
                 message: None,
                 error_type: AppErrorType::ValidationError,
@@ -63,32 +71,22 @@ impl AppError {
             _ => "An unexpected error has occured".to_string(),
         }
     }
-    // This db_error is used when we haven't implmented the From trait
-
-    // pub fn db_error(error: impl ToString) -> AppError {
-    //     AppError {
-    //         cause: Some(error.to_string()),
-    //         message: None,
-    //         error_type: AppErrorType::DbError,
-    //     }
-    // }
 }
-impl fmt::Display for AppError {
+impl fmt::Display for ErrorSys {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        println!(">>> +++ HERE 1 fmt::Display");
         write!(f, "{:?}", self)
     }
 }
 
-impl ResponseError for AppError {
+impl ResponseError for ErrorSys {
     //error_response and status_code are the provided methods for ResponseError Trait
 
     fn status_code(&self) -> StatusCode {
         match self.error_type {
-            AppErrorType::DbError => (StatusCode::INTERNAL_SERVER_ERROR),
-            AppErrorType::NotFoundError => (StatusCode::NOT_FOUND),
-            AppErrorType::ValidationError => (StatusCode::LENGTH_REQUIRED),
-            AppErrorType::AccessError => (StatusCode::UNAUTHORIZED),
+            AppErrorType::DbError => StatusCode::INTERNAL_SERVER_ERROR,
+            AppErrorType::NotFoundError => StatusCode::NOT_FOUND,
+            AppErrorType::ValidationError => StatusCode::LENGTH_REQUIRED,
+            AppErrorType::AccessError => StatusCode::UNAUTHORIZED,
         }
     }
 
@@ -99,9 +97,9 @@ impl ResponseError for AppError {
     }
 }
 
-impl From<ValidationErrors> for AppError {
-    fn from(error: ValidationErrors) -> AppError {
-        AppError {
+impl From<ValidationErrors> for ErrorSys {
+    fn from(error: ValidationErrors) -> ErrorSys {
+        ErrorSys {
             message: None,
             cause: Some(error.to_string()),
             error_type: AppErrorType::ValidationError,
@@ -124,12 +122,12 @@ impl ResponseError for AppErrorType {
 #[cfg(test)]
 mod tests {
 
-    use super::{AppError, AppErrorType};
+    use super::{ErrorSys, AppErrorType};
     use actix_web::error::ResponseError;
 
     #[test]
     fn test_default_db_error() {
-        let db_error = AppError {
+        let db_error = ErrorSys {
             message: None,
             cause: None,
             error_type: AppErrorType::DbError,
@@ -144,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_default_not_found_error() {
-        let db_error = AppError {
+        let db_error = ErrorSys {
             message: None,
             cause: None,
             error_type: AppErrorType::NotFoundError,
@@ -161,7 +159,7 @@ mod tests {
     fn test_user_db_error() {
         let user_message = "User-facing message".to_string();
 
-        let db_error = AppError {
+        let db_error = ErrorSys {
             message: Some(user_message.clone()),
             cause: None,
             error_type: AppErrorType::DbError,
@@ -178,7 +176,7 @@ mod tests {
     fn test_db_error_status_code() {
         let expected = 500;
 
-        let db_error = AppError {
+        let db_error = ErrorSys {
             message: None,
             cause: None,
             error_type: AppErrorType::DbError,
@@ -196,7 +194,7 @@ mod tests {
     fn test_validation_length_status_code() {
         let expected = 411;
 
-        let db_error = AppError {
+        let db_error = ErrorSys {
             message: None,
             cause: None,
             error_type: AppErrorType::ValidationError,

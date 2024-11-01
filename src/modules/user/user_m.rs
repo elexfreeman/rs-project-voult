@@ -1,9 +1,9 @@
-use actix_web::{web, Error};
+use actix_web::web;
 use chrono::prelude::Utc;
 use infrastructure::entity::users as Users;
 use infrastructure::users_sql::UsersSql;
 use sea_orm::ActiveValue;
-use system::error::AppError;
+use system::error_sys::ErrorSys;
 
 use crate::modules::user::user_r::UserRouteR;
 
@@ -12,14 +12,10 @@ pub struct UserM {}
 impl UserM {
     pub async fn add_user(
         request: web::Json<UserRouteR::Add::Request>,
-    ) -> Result<UserRouteR::Add::Response, AppError> {
+    ) -> Result<UserRouteR::Add::Response, ErrorSys> {
         let mut out = UserRouteR::Add::Response { user_id: 0 };
-        println!("request: {:?}", request);
 
-        let user = UsersSql::get_by_telegram_id(request.id.clone())
-            .await
-            .expect("db read error");
-        println!("user: {:?}", user);
+        let user = UsersSql::get_by_telegram_id(request.id.clone()).await?;
 
         if user.len() > 0 {
             out.user_id = user[0].user_id;
@@ -34,10 +30,9 @@ impl UserM {
                 created_at: ActiveValue::Set(Utc::now().naive_utc()),
                 updated_at: ActiveValue::Set(Utc::now().naive_utc()),
             };
-            out.user_id = UsersSql::add(new_user).await.expect("db write error");
+            out.user_id = UsersSql::add(new_user).await?;
         }
 
         Ok(out)
     }
 }
-

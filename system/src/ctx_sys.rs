@@ -5,7 +5,7 @@ use std::sync::MutexGuard;
 use tglib::tg_user_data::{decode_tg_user_data, TgUserData};
 
 use crate::ctx_data_sys::CtxDataSys;
-use crate::error::AppError;
+use crate::error_sys::ErrorSys;
 
 pub struct CtxSys {
     pub req: HttpRequest,
@@ -37,14 +37,14 @@ impl<'a> CtxSys {
             .unwrap()
     }
 
-    pub fn get_user_data(&self) -> Result<TgUserData, AppError> {
+    pub fn get_user_data(&self) -> Result<TgUserData, ErrorSys> {
         let user_data_headers = &self.get_header("_auth");
         match user_data_headers {
             Some(user_data_str) => {
                 return decode_tg_user_data(String::from(user_data_str))
-                    .map_err(|e| AppError::auth_error(e));
+                    .map_err(|e| ErrorSys::auth_error(e));
             }
-            None => Err(AppError::auth_error(String::from("No user data"))),
+            None => Err(ErrorSys::auth_error(String::from("No user data"))),
         }
     }
 }

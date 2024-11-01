@@ -6,7 +6,6 @@ use system;
 use config::config_sys;
 
 mod modules;
-use modules::sample::sample_ctrl;
 use modules::user::user_ctrl;
 
 mod interfaces;
@@ -53,9 +52,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(user_data.clone())
-            .service(sample_ctrl::sample_route_one)
-            .service(sample_ctrl::sample_route_two)
-            .service(sample_ctrl::sample_init_user_data)
             .service(user_ctrl::user_init_route)
     })
     .workers(4)

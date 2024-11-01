@@ -1,4 +1,5 @@
 use sea_orm::{ColumnTrait, DeleteResult, EntityTrait, QueryFilter};
+use system::error_sys::ErrorSys;
 use system::pg_connect_sys::db_connect;
 
 use crate::entity::users as Users;
@@ -6,17 +7,14 @@ use crate::entity::users as Users;
 pub struct UsersSql {}
 
 impl UsersSql {
-
-    pub async fn get_by_telegram_id(owner_id: i32) -> Result<Vec<Users::Model>, sea_orm::DbErr> {
-        println!("connect++++++++ {:?}", owner_id);
+    pub async fn get_by_telegram_id(owner_id: i32) -> Result<Vec<Users::Model>, ErrorSys> {
         let db_conn = db_connect().await;
-        println!("connect>>>>>>>>>>>>: {:?}", owner_id);
         let list = Users::Entity::find()
             .filter(Users::Column::Id.eq(owner_id))
             .all(&db_conn.db)
-            .await?;
-        println!("List: {:?}", list);
-        Ok(list)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()));
+        list
     }
     pub async fn get_by_user_id(id: i32) -> Result<Option<Users::Model>, sea_orm::DbErr> {
         let db_conn = db_connect().await;
@@ -27,15 +25,21 @@ impl UsersSql {
         Ok(out)
     }
 
-    pub async fn add(data: Users::ActiveModel) -> Result<i32, sea_orm::DbErr> {
+    pub async fn add(data: Users::ActiveModel) -> Result<i32, ErrorSys> {
         let db_conn = db_connect().await;
-        let res = Users::Entity::insert(data).exec(&db_conn.db).await?;
+        let res = Users::Entity::insert(data)
+            .exec(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
         Ok(res.last_insert_id)
     }
 
-    pub async fn delete(id: i32) -> Result<DeleteResult, sea_orm::DbErr> {
+    pub async fn delete(id: i32) -> Result<DeleteResult, ErrorSys> {
         let db_conn = db_connect().await;
-        Users::Entity::delete_by_id(id).exec(&db_conn.db).await
+        Users::Entity::delete_by_id(id)
+            .exec(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))
     }
 }
 
