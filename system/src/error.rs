@@ -25,6 +25,14 @@ pub struct AppErrorResponse {
     pub error: String,
 }
 impl AppError {
+    pub fn auth_error(e: String) -> Self {
+        AppError {
+            cause: Some(String::from("Auth error")),
+            message: Some(e),
+            error_type: AppErrorType::AccessError,
+        }
+    }
+
     pub fn json_error(e: error::Error) -> Self {
         AppError {
             cause: Some(String::from("JSON error")),

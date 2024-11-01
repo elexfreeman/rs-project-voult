@@ -1,6 +1,8 @@
 use std::time::Duration;
 use sea_orm::{Database, DatabaseConnection, ConnectOptions};
 use tokio::sync::OnceCell;
+use config::config_sys;
+
 
 // Структура, которая будет синглтоном
 pub struct DbConnectSys {
@@ -9,8 +11,8 @@ pub struct DbConnectSys {
 
 impl DbConnectSys {
     async fn new() -> Self {
-        let config = crate::config_sys::get_config().await;
-        crate::config_sys::print_config(&config);
+        let config = config_sys::get_config().await;
+        config_sys::print_config(&config);
         let db_url = format!(
             "postgres://{}:{}@{}:{}/{}?currentSchema=public",
             config.pg_config.db_user,

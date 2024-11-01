@@ -3,7 +3,7 @@ use actix_web::{web, App, HttpServer};
 use helpers;
 
 use system;
-use system::config_sys;
+use config::config_sys;
 
 mod modules;
 use modules::sample::sample_ctrl;
@@ -17,9 +17,9 @@ use system::pg_connect_sys::db_connect;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
-    let config = crate::system::config_sys::get_config().await;
-    crate::system::config_sys::print_config(&config);
-    let app_port = config.app_config.port;
+    let cfg = config::config_sys::get_config().await;
+    config::config_sys::print_config(&cfg);
+    let app_port = cfg.app_config.port;
 
     let user_data = web::Data::new(CtxDataSys {
         sample_string: "default_value".to_string(),
@@ -30,14 +30,14 @@ async fn main() -> std::io::Result<()> {
         app_port.to_string()
     );
 
-    crate::config_sys::print_config(&config);
+    crate::config_sys::print_config(&cfg);
     let db_url = format!(
         "postgres://{}:{}@{}:{}/{}",
-        config.pg_config.db_user,
-        config.pg_config.db_password,
-        config.pg_config.db_host,
-        config.pg_config.db_port,
-        config.pg_config.db_name
+        cfg.pg_config.db_user,
+        cfg.pg_config.db_password,
+        cfg.pg_config.db_host,
+        cfg.pg_config.db_port,
+        cfg.pg_config.db_name
     );
     println!("dobconnect {}", db_url);
     db_connect().await;
