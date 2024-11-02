@@ -8,7 +8,6 @@ pub mod ProjectRouteR {
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct Request {
-            pub id: i32,
             pub caption: String,
             #[serde(default = "empty_string")]
             pub description: String,
