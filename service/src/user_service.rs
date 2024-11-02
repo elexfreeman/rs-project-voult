@@ -1,7 +1,9 @@
 use chrono::prelude::Utc;
 use sea_orm::ActiveValue;
+use actix_web::HttpRequest;
 
 use config::config_sys;
+use system::ctx_sys::CtxSys;
 use infrastructure::entity::users as Users;
 use infrastructure::users_sql::UsersSql;
 use system::error_sys::ErrorSys;
@@ -26,7 +28,15 @@ pub async fn add_user(tg_user_data: &TgUserData) -> Result<i32, ErrorSys> {
     return Ok(1);
 }
 
-pub async fn get_user_data(auth_header: String) -> Result<TgUserData, ErrorSys> {
+/**
+ *  Прасит _auth header
+ *  сверяет telegram token
+ *  если новый пользователь заносит в db
+ *  отдает данные о пользователе
+ */
+pub async fn get_user_data(req: HttpRequest) -> Result<TgUserData, ErrorSys> {
+    let ctx = CtxSys::new(req);
+    let auth_header = ctx.get_auth_header().await?;
     let config = config_sys::get_config().await;
     let token = config.tg_config.token.clone();
 

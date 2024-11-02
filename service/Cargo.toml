@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.38"
 sea-orm = { version = "1.1.0", features = [ "runtime-tokio-native-tls", "sqlx-postgres", "macros" ] }
+actix-web = "4.9.0"
 
 tglib = {path = "../tglib"}
 config = { path = "../config" }
