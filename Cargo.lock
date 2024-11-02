@@ -2489,6 +2489,7 @@ dependencies = [
  "sea-orm",
  "serde",
  "serde_json",
+ "service",
  "syn 2.0.83",
  "system",
  "tglib",
@@ -2826,6 +2827,18 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "service"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "config",
+ "infrastructure",
+ "sea-orm",
+ "system",
+ "tglib",
 ]
 
 [[package]]

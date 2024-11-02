@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [workspace]
-members = [ "infrastructure","system", "migration", "helpers", "config", "tglib"]
+members = [ "infrastructure","system", "migration", "helpers", "config", "tglib", "service"]
 
 
 [dependencies]
@@ -36,3 +36,4 @@ helpers = { path = "helpers" }
 infrastructure = { path = "infrastructure" }
 config = { path = "config" }
 tglib = { path = "tglib" }
+service = { path = "service" }

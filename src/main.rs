@@ -1,13 +1,14 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use helpers;
+use service;
 
 use system;
 use config::config_sys;
 
 mod modules;
 use modules::user::user_ctrl;
-use modules::project::{self, project_ctrl};
+use modules::project::project_ctrl;
 
 mod interfaces;
 
