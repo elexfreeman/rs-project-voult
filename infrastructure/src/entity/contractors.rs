@@ -3,7 +3,7 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "projects")]
+#[sea_orm(table_name = "contractors")]
 pub struct Model {
     pub created_at: DateTime,
     pub updated_at: DateTime,

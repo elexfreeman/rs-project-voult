@@ -45,7 +45,7 @@ mod tests {
         let owner_id = 1;
         let new_project = Projects::ActiveModel {
             id: ActiveValue::default(),
-            title: ActiveValue::Set(String::from("some title")),
+            caption: ActiveValue::Set(String::from("some title")),
             description: ActiveValue::Set(String::from("some title")),
             created_at: ActiveValue::Set(Utc::now().naive_utc()),
             updated_at: ActiveValue::Set(Utc::now().naive_utc()),

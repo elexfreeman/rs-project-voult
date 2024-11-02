@@ -2,41 +2,35 @@
 
 use sea_orm::entity::prelude::*;
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "projects")]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[sea_orm(table_name = "cache_log_items")]
 pub struct Model {
     pub created_at: DateTime,
     pub updated_at: DateTime,
     #[sea_orm(primary_key)]
     pub id: i32,
     pub caption: String,
-    pub description: String,
-    pub owner_id: i32,
+    #[sea_orm(column_type = "Float")]
+    pub price: f32,
+    pub count: i32,
+    pub cache_log_id: i32,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::cache_log::Entity")]
-    CacheLog,
     #[sea_orm(
-        belongs_to = "super::users::Entity",
-        from = "Column::OwnerId",
-        to = "super::users::Column::Id",
+        belongs_to = "super::cache_log::Entity",
+        from = "Column::CacheLogId",
+        to = "super::cache_log::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
-    Users,
+    CacheLog,
 }
 
 impl Related<super::cache_log::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::CacheLog.def()
-    }
-}
-
-impl Related<super::users::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Users.def()
     }
 }
 

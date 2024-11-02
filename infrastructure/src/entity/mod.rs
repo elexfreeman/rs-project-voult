@@ -2,5 +2,8 @@
 
 pub mod prelude;
 
+pub mod cache_log;
+pub mod cache_log_items;
+pub mod contractors;
 pub mod projects;
 pub mod users;
