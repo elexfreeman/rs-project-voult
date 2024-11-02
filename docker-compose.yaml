@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   rust-builder:
-    image: rust:latest
+    image: jamesmcm03/cargo-deb-amd64-ubuntu
     working_dir: /usr/src/app
     volumes:
       - .:/usr/src/app
