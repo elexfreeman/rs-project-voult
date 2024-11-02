@@ -1,4 +1,5 @@
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter};
+use system::error_sys::ErrorSys;
 use system::pg_connect_sys::db_connect;
 
 use crate::entity::projects as Projects;
@@ -8,27 +9,45 @@ pub struct ProjectsSql {}
 impl ProjectsSql {
     pub async fn get_project_list_by_owner_id(
         owner_id: i32,
-    ) -> Result<Vec<Projects::Model>, sea_orm::DbErr> {
+    ) -> Result<Vec<Projects::Model>, ErrorSys> {
         let db_conn = db_connect().await;
         let projects = Projects::Entity::find()
             .filter(Projects::Column::OwnerId.eq(owner_id))
             .all(&db_conn.db)
-            .await?;
-        Ok(projects)
-    }
-
-    pub async fn get_project_by_id(id: i32) -> Result<Option<Projects::Model>, sea_orm::DbErr> {
-        let db_conn = db_connect().await;
-        let out = Projects::Entity::find_by_id(id)
-            .one(&db_conn.db)
             .await
-            .expect("DB error");
-        Ok(out)
+            .map_err(|e| ErrorSys::db_error(e.to_string()));
+        return projects;
     }
 
-    pub async fn add_project(data: Projects::ActiveModel) -> Result<i32, sea_orm::DbErr> {
+    pub async fn get_project_by_id(
+        project_id: i32,
+        owner_id: i32,
+    ) -> Result<Projects::Model, ErrorSys> {
         let db_conn = db_connect().await;
-        let res = Projects::Entity::insert(data).exec(&db_conn.db).await?;
+        let projects = Projects::Entity::find()
+            .filter(Projects::Column::OwnerId.eq(owner_id))
+            .filter(
+                Condition::all()
+                    .add(Projects::Column::OwnerId.eq(owner_id))
+                    .add(Projects::Column::Id.eq(project_id)),
+            )
+            .all(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+        if projects.len() == 0 {
+            return Err(ErrorSys::not_found_error(format!(
+                "Project with id {} not found",
+                project_id
+            )));
+        }
+        let out = Some(projects[0].clone());
+        return Ok(out.unwrap());
+    }
+
+    pub async fn add(data: Projects::ActiveModel) -> Result<i32, ErrorSys> {
+        let db_conn = db_connect().await;
+        let res = Projects::Entity::insert(data).exec(&db_conn.db).await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
         Ok(res.last_insert_id)
     }
 }
@@ -52,18 +71,15 @@ mod tests {
             owner_id: ActiveValue::Set(owner_id),
         };
 
-        let new_project_id = ProjectsSql::add_project(new_project).await.expect("erorr");
+        let new_project_id = ProjectsSql::add(new_project).await.expect("erorr");
         assert!(new_project_id > 0);
 
-        let project = ProjectsSql::get_project_by_id(new_project_id).await;
+        let project = ProjectsSql::get_project_by_id(new_project_id, owner_id).await;
         assert!(project.is_ok());
-        let project = project.unwrap();
-        assert!(project.is_some());
-        let project = project.unwrap();
-        assert_eq!(project.owner_id, owner_id);
 
-        let project_list = ProjectsSql::get_project_list_by_owner_id(owner_id).await.unwrap();
+        let project_list = ProjectsSql::get_project_list_by_owner_id(owner_id)
+            .await
+            .unwrap();
         assert!(project_list.len() > 0);
     }
-
 }

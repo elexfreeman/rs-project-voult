@@ -41,6 +41,14 @@ impl ErrorSys {
         }
     }
 
+    pub fn not_found_error(e: String) -> Self {
+        ErrorSys {
+            cause: Some(String::from("Not found error")),
+            message: Some(e),
+            error_type: AppErrorType::NotFoundError,
+        }
+    }
+
     pub fn json_error(e: error::Error) -> Self {
         ErrorSys {
             cause: Some(String::from("JSON error")),

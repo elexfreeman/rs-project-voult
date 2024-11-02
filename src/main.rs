@@ -7,6 +7,7 @@ use config::config_sys;
 
 mod modules;
 use modules::user::user_ctrl;
+use modules::project::{self, project_ctrl};
 
 mod interfaces;
 
@@ -53,6 +54,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(user_data.clone())
             .service(user_ctrl::user_init_route)
+            .service(project_ctrl::project_add_route)
+            .service(project_ctrl::project_list_route)
+            .service(project_ctrl::project_get_route)
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?
