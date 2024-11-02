@@ -18,6 +18,18 @@ pub async fn project_add_route(
     Ok(HttpResponse::Ok().json(response))
 }
 
+#[post("/project/update")]
+pub async fn project_update_route(
+    body: Result<web::Json<R::Update::Request>, actix_web::Error>,
+    req: HttpRequest,
+) -> Result<HttpResponse, ErrorSys> {
+    log::info!("Request from /project/update");
+    let body = body.map_err(|e| ErrorSys::json_error(e))?;
+    let user_data = user_service::get_user_data(req).await?;
+    let response = ProjectM::update(body, user_data.id).await?;
+    Ok(HttpResponse::Ok().json(response))
+}
+
 #[post("/project/list")]
 pub async fn project_list_route(
     body: Result<web::Json<R::List::Request>, actix_web::Error>,

@@ -28,6 +28,20 @@ impl ProjectM {
         return Ok(out);
     }
 
+    pub async fn update(
+        request: web::Json<R::Update::Request>,
+        owner_id: i32,
+    ) -> Result<R::Update::Response, ErrorSys> {
+        let item = ProjectsSql::get_project_by_id(request.id, owner_id).await?;
+        let mut pear: projects::ActiveModel = item.into();
+        pear.caption = ActiveValue::Set(request.caption.clone());
+        pear.description = ActiveValue::Set(request.description.clone());
+        let project_id = ProjectsSql::update(pear).await?.id;
+
+        let out = R::Update::Response { project_id };
+        return Ok(out);
+    }
+
     pub async fn list(
         _request: web::Json<R::List::Request>,
         owner_id: i32,

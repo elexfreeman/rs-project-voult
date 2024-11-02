@@ -19,6 +19,25 @@ pub mod ProjectRouteR {
         }
     }
 
+    pub mod Update {
+        use crate::helpers::empty_string;
+        use serde::Deserialize;
+        use serde::Serialize;
+
+        #[derive(Debug, Serialize, Deserialize)]
+        pub struct Request {
+            pub id: i32,
+            pub caption: String,
+            #[serde(default = "empty_string")]
+            pub description: String,
+        }
+
+        #[derive(Debug, Serialize, Deserialize)]
+        pub struct Response {
+            pub project_id: i32,
+        }
+    }
+
     pub mod Get {
         use serde::Deserialize;
         use serde::Serialize;

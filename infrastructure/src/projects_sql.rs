@@ -1,4 +1,4 @@
-use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ColumnTrait, Condition, EntityTrait, QueryFilter};
 use system::error_sys::ErrorSys;
 use system::pg_connect_sys::db_connect;
 
@@ -46,9 +46,19 @@ impl ProjectsSql {
 
     pub async fn add(data: Projects::ActiveModel) -> Result<i32, ErrorSys> {
         let db_conn = db_connect().await;
-        let res = Projects::Entity::insert(data).exec(&db_conn.db).await
+        let res = Projects::Entity::insert(data)
+            .exec(&db_conn.db)
+            .await
             .map_err(|e| ErrorSys::db_error(e.to_string()))?;
         Ok(res.last_insert_id)
+    }
+
+    pub async fn update(data: Projects::ActiveModel) -> Result<Projects::Model, ErrorSys> {
+        let db_conn = db_connect().await;
+        let out = data.update(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()));
+        out
     }
 }
 
