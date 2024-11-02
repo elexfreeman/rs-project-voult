@@ -18,7 +18,6 @@ use system::pg_connect_sys::db_connect;
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
     let cfg = config::config_sys::get_config().await;
-    config::config_sys::print_config(&cfg);
     let app_port = cfg.app_config.port;
 
     let user_data = web::Data::new(CtxDataSys {

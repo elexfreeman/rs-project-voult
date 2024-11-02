@@ -10,6 +10,6 @@
         "db_password": "db_pass"
     },
     "tg_config": {
-        "bot_token": "YOUR_BOT_TOKEN"
+        "oken": "YOUR_BOT_TOKEN"
     }
 }

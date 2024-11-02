@@ -15,19 +15,10 @@ impl<'a> UserCtrl<'a> {
         Self { ctx_sys }
     }
 
-    fn check_user_data(&self) -> Result<(), ErrorSys> {
-        let tg_user_data = self.ctx_sys.get_user_data();
-        match tg_user_data {
-            Ok(_user_data) => Ok(()),
-            Err(e) => Err(e),
-        }
-    }
-
     async fn init(
         &self,
         request: web::Json<R::Add::Request>,
     ) -> Result<R::Add::Response, ErrorSys> {
-        self.check_user_data()?;
         UserM::add_user(request).await
     }
 }

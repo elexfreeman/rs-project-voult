@@ -12,7 +12,6 @@ pub struct DbConnectSys {
 impl DbConnectSys {
     async fn new() -> Self {
         let config = config_sys::get_config().await;
-        config_sys::print_config(&config);
         let db_url = format!(
             "postgres://{}:{}@{}:{}/{}?currentSchema=public",
             config.pg_config.db_user,

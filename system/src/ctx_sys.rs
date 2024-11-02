@@ -2,6 +2,7 @@ use actix_web::{web::Data, HttpRequest};
 use std::sync::Mutex;
 use std::sync::MutexGuard;
 
+use config::config_sys;
 use tglib::tg_user_data::{decode_tg_user_data, TgUserData};
 
 use crate::ctx_data_sys::CtxDataSys;
@@ -37,11 +38,13 @@ impl<'a> CtxSys {
             .unwrap()
     }
 
-    pub fn get_user_data(&self) -> Result<TgUserData, ErrorSys> {
+    pub async fn get_user_data(&self) -> Result<TgUserData, ErrorSys> {
         let user_data_headers = &self.get_header("_auth");
         match user_data_headers {
             Some(user_data_str) => {
-                return decode_tg_user_data(String::from(user_data_str))
+                let config = config_sys::get_config().await;
+                let token = config.tg_config.token.clone();
+                return decode_tg_user_data(String::from(user_data_str), token)
                     .map_err(|e| ErrorSys::auth_error(e));
             }
             None => Err(ErrorSys::auth_error(String::from("No user data"))),

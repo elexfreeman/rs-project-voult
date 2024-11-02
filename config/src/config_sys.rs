@@ -21,10 +21,17 @@ pub struct PgConfig {
     pub db_password: String,
 }
 
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TgConfig {
+    pub token: String,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigSys {
     pub pg_config: PgConfig,
     pub app_config: AppConfig,
+    pub tg_config: TgConfig,
 }
 
 static ONCE: OnceCell<ConfigSys> = OnceCell::const_new();
