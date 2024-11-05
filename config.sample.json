@@ -1,6 +1,7 @@
 {
     "app_config": {
-        "port": 8081
+        "port": 8081,
+        "static_files": "/static"
     },
     "pg_config": {
         "db_host": "localhost",

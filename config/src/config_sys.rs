@@ -10,6 +10,7 @@ use serde::Serialize;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub port: i32,
+    pub static_files: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

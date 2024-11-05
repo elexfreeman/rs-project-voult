@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [workspace]
-members = [ "infrastructure","system", "migration", "helpers", "config", "tglib", "service"]
+members = [ "infrastructure","system", "migration", "helpers", "config", "tglib", "service", "static_files"]
 
 
 [dependencies]
@@ -26,6 +26,7 @@ derive_more = {version = "1.0.0", features = ["full"]}
 once_cell = "1.20.2"
 
 sea-orm = { version = "1.1.0", features = [ "runtime-tokio-native-tls", "sqlx-postgres", "macros" ] }
+actix-files = "0.6.6"
 
 syn = "2.0"
 quote = "1.0"
@@ -37,3 +38,4 @@ infrastructure = { path = "infrastructure" }
 config = { path = "config" }
 tglib = { path = "tglib" }
 service = { path = "service" }
+static_files = { path = "static_files" }

@@ -1,14 +1,17 @@
 use actix_cors::Cors;
+use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 use helpers;
 use service;
 
-use system;
 use config::config_sys;
+use system;
+
+use static_files::static_files;
 
 mod modules;
-use modules::project::project_ctrl;
 use modules::contractor::contractor_ctrl;
+use modules::project::project_ctrl;
 
 mod interfaces;
 
@@ -20,6 +23,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
     let cfg = config::config_sys::get_config().await;
     let app_port = cfg.app_config.port;
+    let static_files_mount_path = cfg.app_config.static_files.clone();
 
     let user_data = web::Data::new(CtxDataSys {
         sample_string: "default_value".to_string(),
@@ -52,16 +56,17 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .wrap(cors)
+            .wrap(Logger::default())
             .app_data(user_data.clone())
             .service(project_ctrl::project_get_route)
             .service(project_ctrl::project_add_route)
             .service(project_ctrl::project_update_route)
             .service(project_ctrl::project_list_route)
-
             .service(contractor_ctrl::contractor_get_route)
             .service(contractor_ctrl::contractor_add_route)
             .service(contractor_ctrl::contractor_update_route)
             .service(contractor_ctrl::contractor_list_route)
+            .service(static_files())
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?

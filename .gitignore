@@ -3,3 +3,4 @@ config.json
 /release
 deploy.sh
 .env
+static
