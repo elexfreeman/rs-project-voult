@@ -23,7 +23,6 @@ async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
     let cfg = config::config_sys::get_config().await;
     let app_port = cfg.app_config.port;
-    let static_files_mount_path = cfg.app_config.static_files.clone();
 
     let user_data = web::Data::new(CtxDataSys {
         sample_string: "default_value".to_string(),
