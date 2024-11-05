@@ -8,6 +8,7 @@ use config::config_sys;
 
 mod modules;
 use modules::project::project_ctrl;
+use modules::contractor::contractor_ctrl;
 
 mod interfaces;
 
@@ -56,6 +57,11 @@ async fn main() -> std::io::Result<()> {
             .service(project_ctrl::project_add_route)
             .service(project_ctrl::project_update_route)
             .service(project_ctrl::project_list_route)
+
+            .service(contractor_ctrl::contractor_get_route)
+            .service(contractor_ctrl::contractor_add_route)
+            .service(contractor_ctrl::contractor_update_route)
+            .service(contractor_ctrl::contractor_list_route)
     })
     .workers(4)
     .bind(format!("0.0.0.0:{}", app_port))?
