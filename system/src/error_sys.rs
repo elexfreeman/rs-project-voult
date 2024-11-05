@@ -1,4 +1,5 @@
 use core::fmt;
+use log::error;
 
 use actix_web::{error::ResponseError, error, http::StatusCode, HttpResponse};
 use serde::Serialize;
@@ -99,7 +100,7 @@ impl ResponseError for ErrorSys {
     }
 
     fn error_response(&self) -> HttpResponse {
-        println!("Error: {}", self);
+        error!("Error: {}", self);
         HttpResponse::build(self.status_code()).json(AppErrorResponse {
             error: self.message(),
         })
