@@ -14,7 +14,8 @@ pub struct TgUserData {
 
 pub fn decode_tg_user_data(tgdata: String, tg_token: String ) -> Result<TgUserData, String> {
     if !tg_check_hash::verify_init_data(&tgdata, &tg_token) {
-        return Err(String::from("Invalid tg user hash"));
+        println!("Invalid token: {}", tgdata.clone());
+        return Err(format!("Invalid token: {}", tgdata.clone()));
     }
     // Разбираем строку запроса в виде параметров
     let parsed_tgdata = Url::parse(&format!("https://example.com/?{}", tgdata))

@@ -99,6 +99,7 @@ impl ResponseError for ErrorSys {
     }
 
     fn error_response(&self) -> HttpResponse {
+        println!("Error: {}", self);
         HttpResponse::build(self.status_code()).json(AppErrorResponse {
             error: self.message(),
         })

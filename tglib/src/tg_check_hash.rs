@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn it_works2() {
-        let query_string = "user=%7B%22id%22%3A398015313%2C%22first_name%22%3A%22Alex%22%2C%22last_name%22%3A%22J%22%2C%22username%22%3A%22ElexShepard%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=8396920176790796100&chat_type=sender&auth_date=1730309229&hash=1a40892a83232c7e070fee6689e6bcc4f772c9ce28a0d52d4e8816bfd871a1c8";
+        let query_string = "user=%7B%22id%22%3A398015313%2C%22first_name%22%3A%22Alex%22%2C%22last_name%22%3A%22J%22%2C%22username%22%3A%22ElexShepard%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=8396920176790796100&chat_type=sender&auth_date=1730838455&hash=838cf1a2cd73aa538bc5f64f4a4c85932700c14b4f552ceb5d3bb697da6c31f3";
         let bot_token_test = "7673642218:AAH-h1sgk3FJhWng0IqH01A2jWmILKSTJ9k";
 
         if verify_init_data(&query_string, &bot_token_test) {
