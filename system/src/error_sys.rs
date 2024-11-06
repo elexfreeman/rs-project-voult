@@ -125,6 +125,7 @@ impl fmt::Display for AppErrorType {
 }
 impl ResponseError for AppErrorType {
     fn error_response(&self) -> HttpResponse {
+        error!("Error: {}", self);
         HttpResponse::build(self.status_code()).finish()
     }
 }
