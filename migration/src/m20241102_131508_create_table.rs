@@ -27,8 +27,19 @@ impl MigrationTrait for Migration {
                     .from(CacheLog::Table, CacheLog::ProjectId)
                     .to(Contractors::Table, Contractors::Id),
             )
+            .col(integer(CacheLog::IsDelete))
             .to_owned();
         manager.create_table(table).await?;
+
+        manager
+            .create_index(
+                sea_query::Index::create()
+                    .name("idx-cache-log-is-delete")
+                    .table(CacheLog::Table)
+                    .col(CacheLog::IsDelete)
+                    .to_owned(),
+            )
+            .await?;
 
         let table = table_auto(CacheLogItems::Table)
             .col(pk_auto(CacheLogItems::Id))
@@ -42,11 +53,25 @@ impl MigrationTrait for Migration {
                     .from(CacheLogItems::Table, CacheLogItems::CacheLogId)
                     .to(CacheLog::Table, CacheLog::Id),
             )
+            .col(integer(CacheLogItems::IsDelete))
             .to_owned();
-        manager.create_table(table).await
+        manager.create_table(table).await?;
+
+        manager
+            .create_index(
+                sea_query::Index::create()
+                    .name("idx-cache-log-items-is-delete")
+                    .table(CacheLogItems::Table)
+                    .col(CacheLogItems::IsDelete)
+                    .to_owned(),
+            )
+            .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        let _ = manager
+            .drop_table(Table::drop().table(CacheLogItems::Table).to_owned())
+            .await;
         manager
             .drop_table(Table::drop().table(CacheLog::Table).to_owned())
             .await
@@ -61,6 +86,7 @@ enum CacheLog {
     Description,
     ProjectId,
     ContractorId,
+    IsDelete,
 }
 
 
@@ -72,4 +98,5 @@ enum CacheLogItems {
     Caption,
     Price,
     Count,
+    IsDelete,
 }

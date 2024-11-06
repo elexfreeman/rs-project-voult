@@ -1,5 +1,5 @@
-use sea_orm_migration::{prelude::*, schema::*};
 use super::m20220101_000001_create_table::Users;
+use sea_orm_migration::{prelude::*, schema::*};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -18,8 +18,19 @@ impl MigrationTrait for Migration {
                     .from(Projects::Table, Projects::OwnerId)
                     .to(Users::Table, Users::Id),
             )
+            .col(integer(Projects::IsDelete))
             .to_owned();
         manager.create_table(table).await?;
+
+        manager
+            .create_index(
+                sea_query::Index::create()
+                    .name("idx-projects-is-delete")
+                    .table(Projects::Table)
+                    .col(Projects::IsDelete)
+                    .to_owned(),
+            )
+            .await?;
 
         let table = table_auto(Contractors::Table)
             .col(pk_auto(Contractors::Id))
@@ -32,8 +43,19 @@ impl MigrationTrait for Migration {
                     .from(Contractors::Table, Contractors::OwnerId)
                     .to(Users::Table, Users::Id),
             )
+            .col(integer(Contractors::IsDelete))
             .to_owned();
         manager.create_table(table).await?;
+
+        manager
+            .create_index(
+                sea_query::Index::create()
+                    .name("idx-contractors-is-delete")
+                    .table(Contractors::Table)
+                    .col(Contractors::IsDelete)
+                    .to_owned(),
+            )
+            .await?;
         Ok(())
     }
 
@@ -54,6 +76,7 @@ pub enum Projects {
     Caption,
     Description,
     OwnerId,
+    IsDelete,
 }
 
 #[derive(Iden)]
@@ -63,4 +86,5 @@ pub enum Contractors {
     Caption,
     Description,
     OwnerId,
+    IsDelete,
 }
