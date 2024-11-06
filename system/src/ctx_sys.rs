@@ -40,7 +40,7 @@ impl<'a> CtxSys {
         let user_data_headers = self.get_header("_auth");
         match user_data_headers {
             Some(user_data_str) => Ok(user_data_str),
-            None => Err(ErrorSys::auth_error(String::from("No user data"))),
+            None => Err(ErrorSys::auth_error(String::from("_auth header not found"))),
         }
     }
 }
