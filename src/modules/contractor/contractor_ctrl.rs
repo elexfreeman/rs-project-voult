@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpRequest, HttpResponse};
+use actix_web::{post, web, HttpResponse};
 
 use crate::service::user_service;
 

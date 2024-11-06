@@ -2878,7 +2878,6 @@ dependencies = [
  "config",
  "infrastructure",
  "sea-orm",
- "serde",
  "system",
  "tglib",
 ]

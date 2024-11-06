@@ -1,12 +1,9 @@
-use actix_web::web::Json;
-use actix_web::HttpRequest;
 use chrono::prelude::Utc;
 use sea_orm::ActiveValue;
 
 use config::config_sys;
 use infrastructure::entity::users as Users;
 use infrastructure::users_sql::UsersSql;
-use system::ctx_sys::CtxSys;
 use system::error_sys::ErrorSys;
 use tglib::tg_user_data::{decode_tg_user_data, TgUserData};
 
