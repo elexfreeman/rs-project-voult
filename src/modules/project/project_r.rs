@@ -11,6 +11,7 @@ pub mod ProjectRouteR {
             pub caption: String,
             #[serde(default = "empty_string")]
             pub description: String,
+            pub auth: String,
         }
 
         #[derive(Debug, Serialize, Deserialize)]
@@ -30,6 +31,7 @@ pub mod ProjectRouteR {
             pub caption: String,
             #[serde(default = "empty_string")]
             pub description: String,
+            pub auth: String,
         }
 
         #[derive(Debug, Serialize, Deserialize)]
@@ -46,6 +48,7 @@ pub mod ProjectRouteR {
         #[derive(Debug, Serialize, Deserialize)]
         pub struct Request {
             pub id: i32,
+            pub auth: String,
         }
 
         #[derive(Debug, Serialize, Deserialize)]
@@ -74,6 +77,7 @@ pub mod ProjectRouteR {
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct Request {
+            pub auth: String,
         }
 
         #[derive(Debug, Serialize, Deserialize)]

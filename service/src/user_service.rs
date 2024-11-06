@@ -1,11 +1,12 @@
+use actix_web::web::Json;
+use actix_web::HttpRequest;
 use chrono::prelude::Utc;
 use sea_orm::ActiveValue;
-use actix_web::HttpRequest;
 
 use config::config_sys;
-use system::ctx_sys::CtxSys;
 use infrastructure::entity::users as Users;
 use infrastructure::users_sql::UsersSql;
+use system::ctx_sys::CtxSys;
 use system::error_sys::ErrorSys;
 use tglib::tg_user_data::{decode_tg_user_data, TgUserData};
 
@@ -34,13 +35,12 @@ pub async fn add_user(tg_user_data: &TgUserData) -> Result<i32, ErrorSys> {
  *  если новый пользователь заносит в db
  *  отдает данные о пользователе
  */
-pub async fn get_user_data(req: HttpRequest) -> Result<TgUserData, ErrorSys> {
-    let ctx = CtxSys::new(req);
-    let auth_header = ctx.get_auth_header().await?;
+pub async fn get_user_data(auth:String) -> Result<TgUserData, ErrorSys> {
+
     let config = config_sys::get_config().await;
     let token = config.tg_config.token.clone();
 
-    let user_data = decode_tg_user_data(auth_header, token).map_err(|e| ErrorSys::auth_error(e))?;
+    let user_data = decode_tg_user_data(auth, token).map_err(|e| ErrorSys::auth_error(e))?;
     add_user(&user_data).await?;
 
     return Ok(user_data);
