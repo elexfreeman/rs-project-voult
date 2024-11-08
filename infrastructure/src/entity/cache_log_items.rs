@@ -14,6 +14,7 @@ pub struct Model {
     pub price: f32,
     pub count: i32,
     pub cache_log_id: i32,
+    pub is_delete: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -80,6 +80,7 @@ mod tests {
             created_at: ActiveValue::Set(Utc::now().naive_utc()),
             updated_at: ActiveValue::Set(Utc::now().naive_utc()),
             owner_id: ActiveValue::Set(owner_id),
+            is_delete: ActiveValue::default(),
         };
 
         let new_project_id = ProjectsSql::add(new_project).await.expect("erorr");

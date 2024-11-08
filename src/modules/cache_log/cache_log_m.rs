@@ -26,6 +26,7 @@ impl CacheLogM {
             updated_at: ActiveValue::Set(Utc::now().naive_utc()),
             project_id: ActiveValue::Set(project_id),
             contractor_id: ActiveValue::Set(request.contractor_id),
+            is_delete: ActiveValue::default(),
         };
         let cache_log_id = CacheLogSql::add(new_cache_log).await?;
 

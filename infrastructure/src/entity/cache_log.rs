@@ -13,6 +13,7 @@ pub struct Model {
     pub description: String,
     pub project_id: i32,
     pub contractor_id: i32,
+    pub is_delete: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

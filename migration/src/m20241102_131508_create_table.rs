@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
                     .from(CacheLog::Table, CacheLog::ProjectId)
                     .to(Contractors::Table, Contractors::Id),
             )
-            .col(integer(CacheLog::IsDelete))
+            .col(boolean(Projects::IsDelete).default(false))
             .to_owned();
         manager.create_table(table).await?;
 
@@ -53,7 +53,7 @@ impl MigrationTrait for Migration {
                     .from(CacheLogItems::Table, CacheLogItems::CacheLogId)
                     .to(CacheLog::Table, CacheLog::Id),
             )
-            .col(integer(CacheLogItems::IsDelete))
+            .col(boolean(Projects::IsDelete).default(false))
             .to_owned();
         manager.create_table(table).await?;
 

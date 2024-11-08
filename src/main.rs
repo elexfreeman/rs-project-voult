@@ -12,6 +12,7 @@ use static_files::static_files;
 mod modules;
 use modules::contractor::contractor_ctrl;
 use modules::project::project_ctrl;
+use modules::cache_log::cache_log_ctrl;
 
 mod interfaces;
 
@@ -65,6 +66,11 @@ async fn main() -> std::io::Result<()> {
             .service(contractor_ctrl::contractor_add_route)
             .service(contractor_ctrl::contractor_update_route)
             .service(contractor_ctrl::contractor_list_route)
+
+            .service(cache_log_ctrl::cache_log_get_route)
+            .service(cache_log_ctrl::cache_log_add_route)
+            .service(cache_log_ctrl::cache_log_update_route)
+            .service(cache_log_ctrl::cache_log_list_route)
             .service(static_files())
     })
     .workers(4)

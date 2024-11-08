@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     .from(Projects::Table, Projects::OwnerId)
                     .to(Users::Table, Users::Id),
             )
-            .col(integer(Projects::IsDelete))
+            .col(boolean(Projects::IsDelete).default(false))
             .to_owned();
         manager.create_table(table).await?;
 
@@ -43,7 +43,7 @@ impl MigrationTrait for Migration {
                     .from(Contractors::Table, Contractors::OwnerId)
                     .to(Users::Table, Users::Id),
             )
-            .col(integer(Contractors::IsDelete))
+            .col(boolean(Projects::IsDelete).default(false))
             .to_owned();
         manager.create_table(table).await?;
 
