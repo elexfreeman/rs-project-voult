@@ -40,7 +40,7 @@ impl CacheLogM {
     ) -> Result<R::Update::Response, ErrorSys> {
         let project = ProjectsSql::one_project_by_id(request.project_id, owner_id).await?;
         let project_id = project.id;
-        let item = CacheLogSql::one_cache_log_by_id(request.id, project_id).await?;
+        let item = CacheLogSql::one_cache_log_by_id_and_project_id(request.id, project_id).await?;
         let mut pear: cache_log::ActiveModel = item.into();
         pear.caption = ActiveValue::Set(request.caption.clone());
         pear.description = ActiveValue::Set(request.description.clone());
@@ -79,7 +79,7 @@ impl CacheLogM {
     ) -> Result<R::Get::Response, ErrorSys> {
         let project = ProjectsSql::one_project_by_id(request.project_id, owner_id).await?;
         let project_id = project.id;
-        let out = CacheLogSql::one_cache_log_by_id(request.id, project_id).await?;
+        let out = CacheLogSql::one_cache_log_by_id_and_project_id(request.id, project_id).await?;
         return Ok(R::Get::Response {
             id: out.id,
             caption: out.caption,

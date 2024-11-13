@@ -22,6 +22,25 @@ impl CacheLogSql {
 
     pub async fn one_cache_log_by_id(
         cache_log_id: i32,
+    ) -> Result<CacheLog::Model, ErrorSys> {
+        let db_conn = db_connect().await;
+        let cache_log = CacheLog::Entity::find()
+            .filter(CacheLog::Column::Id.eq(cache_log_id))
+            .all(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+        if cache_log.len() == 0 {
+            return Err(ErrorSys::not_found_error(format!(
+                "cache_log with id {} not found",
+                cache_log_id
+            )));
+        }
+        let out = Some(cache_log[0].clone());
+        return Ok(out.unwrap());
+    }
+
+    pub async fn one_cache_log_by_id_and_project_id(
+        cache_log_id: i32,
         project_id: i32,
     ) -> Result<CacheLog::Model, ErrorSys> {
         let db_conn = db_connect().await;
