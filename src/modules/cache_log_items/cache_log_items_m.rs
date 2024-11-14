@@ -36,6 +36,38 @@ impl CacheLogItemsM {
         return Ok(out);
     }
 
+    pub async fn add_many(
+        request: web::Json<R::AddMany::Request>,
+        owner_id: i32,
+    ) -> Result<R::AddMany::Response, ErrorSys> {
+        if request.items.len() == 0 {
+            return Err(ErrorSys::not_found_error(String::from("items is empty")))
+        }
+        let cache_log_id = request.items[0].cache_log_id;
+
+        let cache_log = CacheLogSql::one_cache_log_by_id(cache_log_id).await?;
+        let _project = ProjectsSql::one_project_by_id(cache_log.project_id, owner_id).await?;
+        let cache_log_id = cache_log.id;
+        let items_vec = request.items.iter().map(|item|{
+            let new_cache_log_items = cache_log_items::ActiveModel {
+                id: ActiveValue::default(),
+                caption: ActiveValue::Set(item.caption.clone()),
+                price: ActiveValue::Set(item.price),
+                count: ActiveValue::Set(item.count),
+                cache_log_id: ActiveValue::Set(cache_log_id),
+                created_at: ActiveValue::Set(Utc::now().naive_utc()),
+                updated_at: ActiveValue::Set(Utc::now().naive_utc()),
+                is_delete: ActiveValue::default(),
+            };
+            new_cache_log_items
+        }).collect();
+        let cache_log_items_id = CacheLogItemsSql::add_many(items_vec).await?;
+
+        let out = R::AddMany::Response { cache_log_items_id };
+        return Ok(out);
+    }
+
+
     pub async fn update(
         request: web::Json<R::Update::Request>,
         owner_id: i32,

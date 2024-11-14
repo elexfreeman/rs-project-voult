@@ -12,6 +12,11 @@ impl CacheLogItemsSql {
     ) -> Result<Vec<CacheLogItems::Model>, ErrorSys> {
         let db_conn = db_connect().await;
         let cache_log = CacheLogItems::Entity::find()
+            .filter(
+                Condition::all()
+                    .add(CacheLogItems::Column::CacheLogId.eq(cache_log_id))
+                    .add(CacheLogItems::Column::IsDelete.eq(false)),
+            )
             .filter(CacheLogItems::Column::CacheLogId.eq(cache_log_id))
             .order_by_asc(CacheLogItems::Column::UpdatedAt)
             .all(&db_conn.db)
@@ -44,6 +49,15 @@ impl CacheLogItemsSql {
     pub async fn add(data: CacheLogItems::ActiveModel) -> Result<i32, ErrorSys> {
         let db_conn = db_connect().await;
         let res = CacheLogItems::Entity::insert(data)
+            .exec(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+        Ok(res.last_insert_id)
+    }
+
+    pub async fn add_many(data:Vec<CacheLogItems::ActiveModel>) -> Result<i32, ErrorSys> {
+        let db_conn = db_connect().await;
+        let res = CacheLogItems::Entity::insert_many(data)
             .exec(&db_conn.db)
             .await
             .map_err(|e| ErrorSys::db_error(e.to_string()))?;

@@ -17,6 +17,17 @@ pub async fn cache_log_items_add_route(
     Ok(HttpResponse::Ok().json(response))
 }
 
+#[post("/cache_log_items/add_many")]
+pub async fn cache_log_items_add_many_route(
+    body: Result<web::Json<R::AddMany::Request>, actix_web::Error>,
+) -> Result<HttpResponse, ErrorSys> {
+    log::info!("Request from /cache_log_items/add_many");
+    let body = body.map_err(|e| ErrorSys::json_error(e))?;
+    let user_data = user_service::get_user_data(body.auth.clone()).await?;
+    let response = CacheLogItemsM::add_many(body, user_data.id).await?;
+    Ok(HttpResponse::Ok().json(response))
+}
+
 #[post("/cache_log_items/update")]
 pub async fn cache_log_items_update_route(
     body: Result<web::Json<R::Update::Request>, actix_web::Error>,
