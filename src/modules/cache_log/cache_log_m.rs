@@ -1,7 +1,8 @@
 use actix_web::web;
 use chrono::prelude::Utc;
-use infrastructure::entity::cache_log;
 use infrastructure::cache_log_sql::CacheLogSql;
+use infrastructure::contractors_sql::ContractorsSql;
+use infrastructure::entity::cache_log;
 use infrastructure::projects_sql::ProjectsSql;
 use sea_orm::ActiveValue;
 use system::error_sys::ErrorSys;
@@ -16,7 +17,10 @@ impl CacheLogM {
         owner_id: i32,
     ) -> Result<R::Add::Response, ErrorSys> {
         let project = ProjectsSql::one_project_by_id(request.project_id, owner_id).await?;
+        let contractor =
+            ContractorsSql::one_contractor_by_id(request.contractor_id, owner_id).await?;
         let project_id = project.id;
+        let contractor_id = contractor.id;
 
         let new_cache_log = cache_log::ActiveModel {
             id: ActiveValue::default(),
@@ -25,12 +29,12 @@ impl CacheLogM {
             created_at: ActiveValue::Set(Utc::now().naive_utc()),
             updated_at: ActiveValue::Set(Utc::now().naive_utc()),
             project_id: ActiveValue::Set(project_id),
-            contractor_id: ActiveValue::Set(request.contractor_id),
+            contractor_id: ActiveValue::Set(contractor_id),
             is_delete: ActiveValue::default(),
         };
         let cache_log_id = CacheLogSql::add(new_cache_log).await?;
 
-        let out = R::Add::Response { cache_log_id };
+        let out = R::Add::Response { id: cache_log_id };
         return Ok(out);
     }
 
@@ -39,14 +43,19 @@ impl CacheLogM {
         owner_id: i32,
     ) -> Result<R::Update::Response, ErrorSys> {
         let project = ProjectsSql::one_project_by_id(request.project_id, owner_id).await?;
+        let contractor =
+            ContractorsSql::one_contractor_by_id(request.contractor_id, owner_id).await?;
         let project_id = project.id;
+        let contractor_id = contractor.id;
+
         let item = CacheLogSql::one_cache_log_by_id_and_project_id(request.id, project_id).await?;
         let mut pear: cache_log::ActiveModel = item.into();
         pear.caption = ActiveValue::Set(request.caption.clone());
         pear.description = ActiveValue::Set(request.description.clone());
+        pear.contractor_id = ActiveValue::Set(contractor_id);
         let cache_log_id = CacheLogSql::update(pear).await?.id;
 
-        let out = R::Update::Response { cache_log_id };
+        let out = R::Update::Response { id: cache_log_id };
         return Ok(out);
     }
 

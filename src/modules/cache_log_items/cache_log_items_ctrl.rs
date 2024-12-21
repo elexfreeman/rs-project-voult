@@ -39,6 +39,18 @@ pub async fn cache_log_items_update_route(
     Ok(HttpResponse::Ok().json(response))
 }
 
+
+#[post("/cache_log_items/upsert_many")]
+pub async fn cache_log_items_upsert_many_route(
+    body: Result<web::Json<R::Upsert::Request>, actix_web::Error>,
+) -> Result<HttpResponse, ErrorSys> {
+    log::info!("Request from /cache_log_items/upsert_many");
+    let body = body.map_err(|e| ErrorSys::json_error(e))?;
+    let user_data = user_service::get_user_data(body.auth.clone()).await?;
+    let response = CacheLogItemsM::upsert_many(body, user_data.id).await?;
+    Ok(HttpResponse::Ok().json(response))
+}
+
 #[post("/cache_log_items/list")]
 pub async fn cache_log_items_list_route(
     body: Result<web::Json<R::List::Request>, actix_web::Error>,

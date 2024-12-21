@@ -18,7 +18,7 @@ pub mod CacheLogRouteR {
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct Response {
-            pub cache_log_id: i32,
+            pub id: i32,
         }
     }
 
@@ -40,7 +40,7 @@ pub mod CacheLogRouteR {
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct Response {
-            pub cache_log_id: i32,
+            pub id: i32,
         }
     }
 

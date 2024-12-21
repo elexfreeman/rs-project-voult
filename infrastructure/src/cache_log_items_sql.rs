@@ -74,4 +74,14 @@ impl CacheLogItemsSql {
             .map_err(|e| ErrorSys::db_error(e.to_string()));
         out
     }
+
+    pub async fn update_many(data:Vec<CacheLogItems::ActiveModel>) -> Result<i32, ErrorSys> {
+        let db_conn = db_connect().await;
+        let res = CacheLogItems::Entity::insert_many(data)
+            .exec(&db_conn.db)
+            .await
+            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+        Ok(res.last_insert_id)
+    }
+
 }
