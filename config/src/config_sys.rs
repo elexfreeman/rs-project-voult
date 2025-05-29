@@ -29,6 +29,7 @@ pub struct TgConfig {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ConfigSys {
+    pub is_dev: bool,
     pub pg_config: PgConfig,
     pub app_config: AppConfig,
     pub tg_config: TgConfig,

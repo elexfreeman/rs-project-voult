@@ -25,9 +25,21 @@ docker-compose up
 cargo new --lib some-lib-name
 ```
 ## sea-orm-cli - миграции
+Создайте .env со следующим содержимым
+```bash
+DATABASE_URL=postgres://user:pass@host:port/db_name
+```
+### Установка sea-orm-cli
+```bash
+cargo install sea-orm-cli@1.1.0
+```
+### запуск миграции
+```bash
+sea-orm-cli migrate up
+```
+### генерация миграции
 ```bash
 sea-orm-cli migrate generate create_table
-sea-orm-cli migrate up
 sea-orm-cli generate entity  -o infrastructure/src/entity
 sea-orm-cli generate entity -u protocol://username:password@localhost/bakery -o entity/src
 ```

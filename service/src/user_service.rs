@@ -36,6 +36,20 @@ pub async fn get_user_data(auth:String) -> Result<TgUserData, ErrorSys> {
 
     let config = config_sys::get_config().await;
     let token = config.tg_config.token.clone();
+    let is_dev = config.is_dev;
+
+    if is_dev {
+        let user_data = TgUserData{
+            id: 1,
+            first_name: String::from("test"),
+            last_name: String::from("test"),
+            username: String::from("test"),
+            language_code: String::from("en"),
+            hash: String::from(""),
+        };
+        add_user(&user_data).await?;
+        return Ok(user_data);
+    }
 
     let user_data = decode_tg_user_data(auth, token).map_err(|e| ErrorSys::auth_error(e))?;
     add_user(&user_data).await?;
