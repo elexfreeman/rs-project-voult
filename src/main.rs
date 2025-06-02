@@ -74,6 +74,7 @@ async fn main() -> std::io::Result<()> {
             .service(cache_log_ctrl::cache_log_list_route)
 
             .service(cache_log_items_ctrl::cache_log_items_upsert_many_route)
+            .service(cache_log_items_ctrl::cache_log_items_list_route)
             .service(static_files())
     })
     .workers(4)
