@@ -16,7 +16,7 @@ impl CacheLogSql {
             .order_by_asc(CacheLog::Column::UpdatedAt)
             .all(&db_conn.db)
             .await
-            .map_err(|e| ErrorSys::db_error(e.to_string()));
+            .map_err(|e| ErrorSys::db_error(format!("list_cache_log_by_project_id.one_cache_log_by_id {}", e.to_string())));
         return cache_log;
     }
 
@@ -28,10 +28,10 @@ impl CacheLogSql {
             .filter(CacheLog::Column::Id.eq(cache_log_id))
             .all(&db_conn.db)
             .await
-            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+            .map_err(|e| ErrorSys::db_error(format!("cache_log_sql.one_cache_log_by_id {}", e.to_string())))?;
         if cache_log.len() == 0 {
             return Err(ErrorSys::not_found_error(format!(
-                "cache_log with id {} not found",
+                "cache_log_sql.one_cache_log_by_id cache_log with id {} not found",
                 cache_log_id
             )));
         }
@@ -53,7 +53,7 @@ impl CacheLogSql {
             )
             .all(&db_conn.db)
             .await
-            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+            .map_err(|e| ErrorSys::db_error(format!("cache_log_sql.one_cache_log_by_id_and_project_id {}", e.to_string())))?;
         if cache_log.len() == 0 {
             return Err(ErrorSys::not_found_error(format!(
                 "cache_log with id {} not found",
@@ -69,7 +69,7 @@ impl CacheLogSql {
         let res = CacheLog::Entity::insert(data)
             .exec(&db_conn.db)
             .await
-            .map_err(|e| ErrorSys::db_error(e.to_string()))?;
+            .map_err(|e| ErrorSys::db_error(format!("cache_log_sql.add {}", e.to_string())))?;
         Ok(res.last_insert_id)
     }
 
@@ -77,7 +77,7 @@ impl CacheLogSql {
         let db_conn = db_connect().await;
         let out = data.update(&db_conn.db)
             .await
-            .map_err(|e| ErrorSys::db_error(e.to_string()));
+            .map_err(|e| ErrorSys::db_error(format!("cache_log_sql.update {}", e.to_string())));
         out
     }
 }

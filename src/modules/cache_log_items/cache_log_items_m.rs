@@ -79,6 +79,7 @@ impl CacheLogItemsM {
             return Err(ErrorSys::not_found_error(String::from("items is empty")));
         }
         let cache_log_id = request.items[0].cache_log_id;
+        log::info!("upsert_many cache_log_id={:?}, owner_id={:?}", request, owner_id);
 
         let cache_log = CacheLogSql::one_cache_log_by_id(cache_log_id).await?;
         let _project = ProjectsSql::one_project_by_id(cache_log.project_id, owner_id).await?;
@@ -89,7 +90,6 @@ impl CacheLogItemsM {
             if req_item.id > 0 {
                 let db_item =
                     CacheLogItemsSql::one_by_id_and_cache_log_id(req_item.id, cache_log_id).await?;
-
                 let mut pear: cache_log_items::ActiveModel = db_item.into();
                 pear.caption = ActiveValue::Set(req_item.caption.clone());
                 pear.price = ActiveValue::Set(req_item.price);
@@ -97,17 +97,6 @@ impl CacheLogItemsM {
                 pear.updated_at = ActiveValue::Set(Utc::now().naive_utc());
                 items_update.push(pear);
 
-                let update_cache_log_item = cache_log_items::ActiveModel {
-                    id: ActiveValue::default(),
-                    caption: ActiveValue::Set(req_item.caption.clone()),
-                    price: ActiveValue::Set(req_item.price),
-                    count: ActiveValue::Set(req_item.count),
-                    cache_log_id: ActiveValue::Set(cache_log_id),
-                    created_at: ActiveValue::Set(Utc::now().naive_utc()),
-                    updated_at: ActiveValue::Set(Utc::now().naive_utc()),
-                    is_delete: ActiveValue::default(),
-                };
-                items_update.push(update_cache_log_item);
             } else {
                 let new_cache_log_item = cache_log_items::ActiveModel {
                     id: ActiveValue::default(),
@@ -123,9 +112,13 @@ impl CacheLogItemsM {
             }
         }
 
-        CacheLogItemsSql::add_many(items_add).await?;
-        for update_item in items_update {
-            CacheLogItemsSql::update(update_item).await?;
+        if items_add.len() > 0 {
+            CacheLogItemsSql::add_many(items_add).await?;
+        }
+        if items_update.len() > 0 {
+            for update_item in items_update {
+                CacheLogItemsSql::update(update_item).await?;
+            }
         }
 
         let out = R::Upsert::Response {};

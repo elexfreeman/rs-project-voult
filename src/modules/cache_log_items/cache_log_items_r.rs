@@ -30,8 +30,6 @@ pub mod CacheLogItemsRouteR {
             pub price: f32,
             pub count: i32,
             pub cache_log_id: i32,
-            pub created_at: String,
-            pub updated_at: String,
         }
 
         #[derive(Debug, Serialize, Deserialize)]

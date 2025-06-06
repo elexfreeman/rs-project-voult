@@ -22,7 +22,7 @@ use system::pg_connect_sys::db_connect;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     let cfg = config::config_sys::get_config().await;
     let app_port = cfg.app_config.port;
 
@@ -73,6 +73,7 @@ async fn main() -> std::io::Result<()> {
             .service(cache_log_ctrl::cache_log_update_route)
             .service(cache_log_ctrl::cache_log_list_route)
 
+            .service(cache_log_items_ctrl::cache_log_items_add_many_route)
             .service(cache_log_items_ctrl::cache_log_items_upsert_many_route)
             .service(cache_log_items_ctrl::cache_log_items_list_route)
             .service(static_files())
