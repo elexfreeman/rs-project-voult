@@ -79,7 +79,6 @@ impl CacheLogItemsM {
             return Err(ErrorSys::not_found_error(String::from("items is empty")));
         }
         let cache_log_id = request.items[0].cache_log_id;
-        log::info!("upsert_many cache_log_id={:?}, owner_id={:?}", request, owner_id);
 
         let cache_log = CacheLogSql::one_cache_log_by_id(cache_log_id).await?;
         let _project = ProjectsSql::one_project_by_id(cache_log.project_id, owner_id).await?;
